@@ -5,7 +5,7 @@ const STEPS = [
   { label: '웹사이트를 분석하고 있습니다', target: 28 },
   { label: '브랜드 정보를 추출하는 중입니다', target: 56 },
   { label: '제품 데이터를 정리하고 있습니다', target: 82 },
-  { label: '글로벌 판매 페이지를 준비 중입니다', target: 100 },
+  { label: '브랜드 이해 리포트를 정리하고 있습니다', target: 100 },
 ] as const
 
 const KEYWORDS = [
