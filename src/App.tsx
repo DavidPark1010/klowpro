@@ -8,6 +8,8 @@ import { ProductView } from './components/ProductView'
 import { ProductScanningView } from './components/ProductScanningView'
 import { ProductResultView } from './components/ProductResultView'
 import { SuccessView } from './components/SuccessView'
+import { BusinessVerificationView } from './components/BusinessVerificationView'
+import { DashboardView } from './components/DashboardView'
 
 type Stage =
   | 'idle'
@@ -18,7 +20,9 @@ type Stage =
   | 'product'
   | 'product-scanning'
   | 'product-result'
+  | 'verification'
   | 'success'
+  | 'dashboard'
 
 export default function App() {
   const [url, setUrl] = useState('')
@@ -89,7 +93,17 @@ export default function App() {
       <ProductResultView
         onReset={() => setStage('idle')}
         onBack={() => setStage('product')}
-        onSubmit={() => setStage('success')}
+        onSubmit={() => setStage('verification')}
+      />
+    )
+  }
+
+  if (stage === 'verification') {
+    return (
+      <BusinessVerificationView
+        onReset={() => setStage('idle')}
+        onBack={() => setStage('product-result')}
+        onContinue={() => setStage('dashboard')}
       />
     )
   }
@@ -99,7 +113,16 @@ export default function App() {
       <SuccessView
         onReset={() => setStage('idle')}
         onAddMore={() => setStage('product')}
-        onViewStore={() => setStage('idle')}
+        onViewStore={() => setStage('dashboard')}
+      />
+    )
+  }
+
+  if (stage === 'dashboard') {
+    return (
+      <DashboardView
+        onReset={() => setStage('idle')}
+        onAddProduct={() => setStage('product')}
       />
     )
   }

@@ -229,13 +229,13 @@ export function ProductResultView({ onReset, onBack, onSubmit }: Props) {
               onClick={onSubmit}
               className="rounded-full border border-slate-200 bg-white px-4 py-3 text-[13.5px] font-medium tracking-[-0.005em] text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 sm:px-5"
             >
-              수정 후 등록
+              수정 후 인증으로 이동
             </button>
             <button
               onClick={onSubmit}
               className="group inline-flex items-center justify-center gap-2 rounded-full bg-black px-5 py-3 text-[14px] font-semibold tracking-[-0.015em] text-white shadow-[0_1px_2px_rgba(0,0,0,0.18),0_14px_32px_rgba(0,0,0,0.20)] transition hover:-translate-y-px hover:shadow-[0_2px_4px_rgba(0,0,0,0.22),0_20px_40px_rgba(0,0,0,0.26)] active:translate-y-0 sm:px-7 sm:py-3.5 sm:text-[15px]"
             >
-              글로벌 스토어에 등록하기
+              등록 완료하고 사업자 인증하기
               <ArrowRight
                 className="size-4 transition group-hover:translate-x-0.5"
                 strokeWidth={2.5}
