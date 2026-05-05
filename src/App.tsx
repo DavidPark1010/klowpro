@@ -1,66 +1,37 @@
 import { useState } from 'react'
-import { ArrowRight, Globe } from 'lucide-react'
-import { ScanningView } from './components/ScanningView'
-import { ResultView } from './components/ResultView'
+import { ArrowRight, Lock, Sparkles } from 'lucide-react'
 import { SetupView } from './components/SetupView'
-import { SettlementView } from './components/SettlementView'
-import { ProductView } from './components/ProductView'
-import { ProductScanningView } from './components/ProductScanningView'
-import { ProductResultView } from './components/ProductResultView'
-import { SuccessView } from './components/SuccessView'
-import { BusinessVerificationView } from './components/BusinessVerificationView'
+import { AccountGateView } from './components/AccountGateView'
+import { ProductSetupView } from './components/ProductSetupView'
+import { PlanGateView } from './components/PlanGateView'
 import { DashboardView } from './components/DashboardView'
 
-type Stage =
-  | 'idle'
-  | 'scanning'
-  | 'result'
-  | 'setup'
-  | 'settlement'
-  | 'product'
-  | 'product-scanning'
-  | 'product-result'
-  | 'verification'
-  | 'success'
-  | 'dashboard'
+type Stage = 'start' | 'setup' | 'account' | 'product' | 'plan' | 'dashboard'
 
 export default function App() {
-  const [url, setUrl] = useState('')
-  const [stage, setStage] = useState<Stage>('idle')
+  const [stage, setStage] = useState<Stage>('start')
+  const [brandAddress, setBrandAddress] = useState('')
 
-  if (stage === 'scanning') {
-    return (
-      <ScanningView
-        url={url}
-        onReset={() => setStage('idle')}
-        onComplete={() => setStage('result')}
-      />
-    )
-  }
-
-  if (stage === 'result') {
-    return (
-      <ResultView
-        onReset={() => setStage('idle')}
-        onContinue={() => setStage('setup')}
-      />
-    )
-  }
+  const sourceLabel = brandAddress.trim() || 'yourbrand'
 
   if (stage === 'setup') {
     return (
       <SetupView
-        onReset={() => setStage('idle')}
-        onBack={() => setStage('result')}
-        onContinue={() => setStage('settlement')}
+        source={sourceLabel}
+        mode="brand"
+        onReset={() => setStage('start')}
+        onBack={() => setStage('start')}
+        onContinue={() => setStage('account')}
       />
     )
   }
 
-  if (stage === 'settlement') {
+  if (stage === 'account') {
     return (
-      <SettlementView
-        onReset={() => setStage('idle')}
+      <AccountGateView
+        source={sourceLabel}
+        mode="brand"
+        onReset={() => setStage('start')}
         onBack={() => setStage('setup')}
         onContinue={() => setStage('product')}
       />
@@ -69,51 +40,21 @@ export default function App() {
 
   if (stage === 'product') {
     return (
-      <ProductView
-        onReset={() => setStage('idle')}
-        onBack={() => setStage('settlement')}
-        onContinue={(opt) =>
-          setStage(opt === 'auto' ? 'product-scanning' : 'idle')
-        }
+      <ProductSetupView
+        source={sourceLabel}
+        onReset={() => setStage('start')}
+        onBack={() => setStage('account')}
+        onContinue={() => setStage('plan')}
       />
     )
   }
 
-  if (stage === 'product-scanning') {
+  if (stage === 'plan') {
     return (
-      <ProductScanningView
-        onReset={() => setStage('idle')}
-        onComplete={() => setStage('product-result')}
-      />
-    )
-  }
-
-  if (stage === 'product-result') {
-    return (
-      <ProductResultView
-        onReset={() => setStage('idle')}
+      <PlanGateView
+        onReset={() => setStage('start')}
         onBack={() => setStage('product')}
-        onSubmit={() => setStage('verification')}
-      />
-    )
-  }
-
-  if (stage === 'verification') {
-    return (
-      <BusinessVerificationView
-        onReset={() => setStage('idle')}
-        onBack={() => setStage('product-result')}
         onContinue={() => setStage('dashboard')}
-      />
-    )
-  }
-
-  if (stage === 'success') {
-    return (
-      <SuccessView
-        onReset={() => setStage('idle')}
-        onAddMore={() => setStage('product')}
-        onViewStore={() => setStage('dashboard')}
       />
     )
   }
@@ -121,98 +62,84 @@ export default function App() {
   if (stage === 'dashboard') {
     return (
       <DashboardView
-        onReset={() => setStage('idle')}
-        onAddProduct={() => setStage('product')}
+        onReset={() => setStage('start')}
+        onEdit={() => setStage('setup')}
       />
     )
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-white text-black antialiased">
-      <header className="flex items-center justify-between px-6 py-6 sm:px-10">
-        <a
-          href="/"
-          className="text-xl font-bold tracking-[-0.03em] text-black"
-        >
-          KLOW
-        </a>
-        <button className="text-[14px] font-medium tracking-[-0.01em] text-slate-700 transition hover:text-black">
-          로그인
+    <div className="flex min-h-screen flex-col bg-white text-slate-950 antialiased">
+      <header className="mx-auto flex w-full max-w-[1120px] items-center justify-between px-5 py-5 sm:px-8">
+        <button className="text-xl font-bold tracking-[-0.03em]">KLOW</button>
+        <button className="rounded-full border border-slate-200 px-4 py-2 text-[13px] font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50">
+          관리자 로그인
         </button>
       </header>
 
-      <main className="flex flex-1 items-center justify-center px-6 pb-12">
-        <div className="w-full max-w-3xl text-center">
-          <h1 className="mx-auto max-w-3xl break-keep text-[34px] font-semibold leading-[1.18] tracking-[-0.035em] text-black sm:text-[56px] sm:leading-[1.12] lg:text-[64px]">
-            개발 없이, 해외 판매 바로 시작하세요
+      <main className="flex flex-1 items-center justify-center px-5 pb-16 pt-6">
+        <section className="w-full max-w-[680px] text-center">
+          <div className="mx-auto inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-[12px] font-semibold text-slate-700">
+            <Sparkles className="size-3.5" strokeWidth={2.25} />
+            글로벌 판매관 바로 만들기
+          </div>
+
+          <h1 className="mx-auto mt-6 max-w-[640px] break-keep text-[38px] font-semibold leading-[1.1] tracking-[-0.045em] sm:text-[62px]">
+            판매하고 싶은 브랜드 주소만 입력하세요.
           </h1>
 
-          <p className="mx-auto mt-6 max-w-md whitespace-pre-line break-keep text-[15px] leading-[1.75] tracking-[-0.01em] text-slate-500 sm:mt-7 sm:text-[17px]">
-            {'지금 운영 중인 자사몰 그대로\nAI가 글로벌 판매 페이지와 결제까지 자동으로 만들어드립니다'}
+          <p className="mx-auto mt-5 max-w-[540px] break-keep text-[16px] leading-[1.7] tracking-[-0.01em] text-slate-600 sm:text-[18px]">
+            먼저 매력적인 브랜드관을 만들어드립니다. 마음에 들면 그때 주소를
+            선점하고, 로그인 이후 상품 가격과 상세 정보를 등록하면 됩니다.
           </p>
 
           <form
             onSubmit={(e) => {
               e.preventDefault()
-              setStage('scanning')
+              setStage('setup')
             }}
-            className="mx-auto mt-12 flex max-w-xl flex-col items-center sm:mt-14"
+            className="mx-auto mt-10 rounded-[28px] border border-slate-200 bg-white p-3 text-left shadow-[0_34px_90px_-52px_rgba(15,23,42,0.45)]"
           >
-            <label htmlFor="brand-url" className="sr-only">
-              브랜드 웹사이트 주소
+            <label className="block rounded-3xl border border-slate-950 bg-white p-5">
+              <span className="block text-[16px] font-semibold tracking-[-0.015em]">
+                글로벌 판매관 주소
+              </span>
+              <span className="mt-1 block break-keep text-[13px] leading-[1.5] text-slate-500">
+                대부분 브랜드명을 그대로 입력하면 됩니다. 나중에 변경할 수 있습니다.
+              </span>
+              <div className="mt-4 flex items-center rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 focus-within:border-slate-400">
+                <span className="shrink-0 text-[15px] font-semibold text-slate-400">
+                  klow.global/
+                </span>
+                <input
+                  value={brandAddress}
+                  onChange={(e) => setBrandAddress(e.target.value)}
+                  placeholder="yourbrand"
+                  className="min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-slate-400"
+                  autoComplete="off"
+                />
+              </div>
             </label>
-            <div className="group relative flex w-full items-center rounded-2xl border border-slate-200 bg-white pl-5 pr-2 py-2 shadow-[0_1px_3px_rgba(15,23,42,0.04),0_4px_12px_rgba(15,23,42,0.04)] transition focus-within:border-slate-300 focus-within:shadow-[0_2px_6px_rgba(15,23,42,0.06),0_12px_28px_rgba(15,23,42,0.10)]">
-              <Globe
-                className="size-5 shrink-0 text-slate-400"
-                strokeWidth={1.75}
-              />
-              <input
-                id="brand-url"
-                type="url"
-                value={url}
-                onChange={(e) => setUrl(e.target.value)}
-                placeholder="브랜드 웹사이트 주소를 입력하세요 (예: www.yourbrand.com)"
-                className="ml-3 w-full bg-transparent py-3 text-[15px] tracking-[-0.01em] text-black outline-none placeholder:text-slate-400"
-                autoComplete="url"
-              />
-            </div>
 
             <button
               type="submit"
-              className="mt-4 inline-flex items-center justify-center gap-2 rounded-full bg-black px-7 py-3.5 text-[15px] font-semibold tracking-[-0.015em] text-white shadow-[0_1px_2px_rgba(0,0,0,0.18),0_8px_24px_rgba(0,0,0,0.16)] transition hover:-translate-y-px hover:shadow-[0_2px_4px_rgba(0,0,0,0.20),0_14px_32px_rgba(0,0,0,0.22)] active:translate-y-0 active:shadow-[0_1px_2px_rgba(0,0,0,0.18)]"
+              className="mt-3 inline-flex h-13 w-full items-center justify-center gap-2 rounded-2xl bg-black px-5 text-[15px] font-semibold text-white transition hover:-translate-y-px"
             >
-              무료로 시작하기
-              <ArrowRight className="size-4" strokeWidth={2.25} />
+              브랜드관 먼저 만들기
+              <ArrowRight className="size-4" strokeWidth={2.5} />
             </button>
-
-            <p className="mt-5 text-[12px] tracking-[-0.005em] text-slate-400">
-              개발 필요 없음 · 초기 비용 없음 · 몇 분 안에 시작
-            </p>
           </form>
-        </div>
-      </main>
 
-      <footer className="px-6 pb-10 sm:px-10">
-        <div className="mx-auto max-w-3xl border-t border-slate-100 pt-8">
-          <div className="flex flex-col items-center gap-5 text-center">
-            <span className="text-[12px] tracking-[-0.005em] text-slate-400">
-              이미 많은 K-뷰티 브랜드가 사용 중입니다
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-x-5 gap-y-2 text-[12px] font-medium text-slate-400">
+            <span className="inline-flex items-center gap-1.5">
+              <Lock className="size-3.5" />
+              가입 없이 먼저 보기
             </span>
-            <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-3">
-              {['LUMINE', 'NUOVA', 'SOOJI', 'HALA', 'BORI&CO', 'YEONHWA'].map(
-                (brand) => (
-                  <span
-                    key={brand}
-                    className="text-[13px] font-semibold tracking-[0.04em] text-slate-300"
-                  >
-                    {brand}
-                  </span>
-                ),
-              )}
-            </div>
+            <span>브랜드관 완성 후 로그인</span>
+            <span>상품 등록은 로그인 이후</span>
           </div>
-        </div>
-      </footer>
+        </section>
+      </main>
     </div>
   )
 }
